@@ -29,6 +29,7 @@ def color_to_tuple(value: int):
     if isinstance(value, tuple):
         return value
     if isinstance(value, int):
+
         if value >> 24:
             raise ValueError("Only bits 0->23 valid for integer input")
         r = value >> 16
@@ -154,57 +155,65 @@ class LEDSimulation:
     def __len__(self):
         return len(self.leds_list)
 
-    def __setitem__(self, index, color):
-        if isinstance(color, int):
+    def get_color_position_in_palette(self, color):
+        if color not in self.palette:
             self.palette[self._palette_counter] = color
-            converted_color = color_to_tuple(color)
-            self.leds_list[index].r = converted_color[0]
-            self.leds_list[index].g = converted_color[1]
-            self.leds_list[index].b = converted_color[2]
-            self.leds_list[index].led_circle.color_index = self._palette_counter
+            self._palette_helper.append(color)
+            color_position_in_palette = self._palette_counter
             self._palette_counter += 1
+        else:
+            color_position_in_palette = self._palette_helper.index(color)
+        return color_position_in_palette
+
+    def set_led_color(self, led, color, color_position_in_palette):
+        led.r, led.g, led.b = color
+        led.led_circle.color_index = color_position_in_palette
+
+    def __setitem__(self, index, color):
+
+        if isinstance(color, int):
+            converted_color = color_to_tuple(color)
+            color_position_in_palette = self.get_color_position_in_palette(
+                color
+            )
+            self.set_led_color(
+                self.leds_list[index],
+                converted_color,
+                color_position_in_palette,
+            )
+
         elif len(color) == 3:
             converted_color = tuple_to_color(color)
-            if converted_color not in self.palette:
-                self.palette[self._palette_counter] = converted_color
-                self._palette_helper.append(converted_color)
-                color_position_in_palette = self._palette_counter
-                self._palette_counter += 1
-            else:
-                color_position_in_palette = self._palette_helper.index(
-                    converted_color
-                )
-
-            self.leds_list[index].r = color[0]
-            self.leds_list[index].g = color[1]
-            self.leds_list[index].b = color[2]
-            self.leds_list[index].led_circle.color_index = (
-                color_position_in_palette
+            color_position_in_palette = self.get_color_position_in_palette(
+                converted_color
             )
+            self.set_led_color(
+                self.leds_list[index], color, color_position_in_palette
+            )
+
         else:
-
             for index, element in enumerate(color):
-
                 if element == 0:
-                    self.leds_list[index].r = 0
-                    self.leds_list[index].g = 0
-                    self.leds_list[index].b = 0
-                    self.leds_list[index].led_circle.color_index = 0
-                else:
+                    self.set_led_color(self.leds_list[index], (0, 0, 0), 0)
 
+                elif isinstance(element, int):
+                    converted_color = color_to_tuple(element)
+                    color_position_in_palette = (
+                        self.get_color_position_in_palette(element)
+                    )
+                    self.set_led_color(
+                        self.leds_list[index],
+                        converted_color,
+                        color_position_in_palette,
+                    )
+
+                else:
                     converted_color = tuple_to_color(element)
-                    if converted_color not in self.palette:
-                        self.palette[self._palette_counter] = converted_color
-                        self._palette_helper.append(converted_color)
-                        color_position_in_palette = self._palette_counter
-                        self._palette_counter += 1
-                    else:
-                        color_position_in_palette = self._palette_helper.index(
-                            converted_color
-                        )
-                    self.leds_list[index].r = element[0]
-                    self.leds_list[index].g = element[1]
-                    self.leds_list[index].b = element[2]
-                    self.leds_list[index].led_circle.color_index = (
-                        color_position_in_palette
+                    color_position_in_palette = (
+                        self.get_color_position_in_palette(converted_color)
+                    )
+                    self.set_led_color(
+                        self.leds_list[index],
+                        element,
+                        color_position_in_palette,
                     )

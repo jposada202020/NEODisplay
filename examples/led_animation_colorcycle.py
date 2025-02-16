@@ -3,13 +3,16 @@
 # SPDX-License-Identifier: MIT
 
 """
-Example of the Comet animation using the LEDSimulation Library.
+ColorCycle example for LEDSimulation
 """
 import board
-from animation.comet import Comet
-from color import JADE, BLUE
 from led_simulation import LEDSimulation
-
+from animation.colorcycle import ColorCycle
+from color import (
+    TEAL,
+    MAGENTA,
+    ORANGE,
+)
 
 # Defintions
 pixel_num = 30
@@ -20,7 +23,8 @@ pixels = LEDSimulation(
     display, led_count=30, led_spacing=9, led_radius=4, led_color=0x000000
 )
 
-comet = Comet(pixels, speed=0.1, color=BLUE, tail_length=10, bounce=True)
+colorcycle = ColorCycle(pixels, speed=0.4, colors=[MAGENTA, ORANGE, TEAL])
+
 
 while True:
-    comet.animate()
+    colorcycle.animate()
