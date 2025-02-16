@@ -9,3 +9,7 @@ Animations implemented:
 * Chase
 * Colorcycle
 * Comet
+* PacMan
+* Rainbow Animations
+* Sparkle
+* Pulse
