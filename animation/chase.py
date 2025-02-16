@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-`adafruit_led_animation.animation.chase`
+`animation.chase`
 ================================================================================
 
 Theatre chase animation for CircuitPython helper library for LED animations.

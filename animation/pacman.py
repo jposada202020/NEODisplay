@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-`adafruit_led_animation.animation.pacman`
+`animation.pacman`
 ================================================================================
 
 PacMan Animation for CircuitPython helper library for LED animations.

@@ -1,14 +1,9 @@
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
+# SPDX-FileCopyrightText: Jose David Montoya
 # SPDX-License-Identifier: MIT
 
 """
-This example uses AnimationsSequence to display multiple animations in sequence, at a five second
-interval.
-
-For NeoPixel FeatherWing. Update pixel_pin and pixel_num to match your wiring if using
-a different form of NeoPixels.
-
-This example does not work on SAMD21 (M0) boards.
+Rainbow annimations for the LEDSimulation class.
 """
 import board
 from led_simulation import LEDSimulation
@@ -28,15 +23,20 @@ pixels = LEDSimulation(
 )
 
 
+rainbow = Rainbow(pixels, speed=0.1, period=2)
 rainbow_chase = RainbowChase(pixels, speed=0.1, size=5, spacing=3)
 rainbow_comet = RainbowComet(pixels, speed=0.1, tail_length=7, bounce=True)
+rainbow_sparkle = RainbowSparkle(pixels, speed=0.1, num_sparkles=15)
+
 
 animations = AnimationSequence(
+    rainbow,
     rainbow_chase,
     rainbow_comet,
+    rainbow_sparkle,
     advance_interval=5,
     auto_clear=True,
 )
 
 while True:
-    animations.animate()
+    rainbow_sparkle.animate()

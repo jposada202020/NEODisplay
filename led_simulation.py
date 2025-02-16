@@ -103,7 +103,7 @@ class LEDSimulation:
         self.led_color = led_color
         self.leds_list = []
         self.group = displayio.Group()
-        self.palette = displayio.Palette(256)
+        self.palette = displayio.Palette(1200)
 
         self.palette[0] = 0x000000
         self.palette[1] = led_color
@@ -182,7 +182,7 @@ class LEDSimulation:
                 color_position_in_palette,
             )
 
-        elif len(color) == 3:
+        elif len(color) == 3 and isinstance(color, tuple):
             converted_color = tuple_to_color(color)
             color_position_in_palette = self.get_color_position_in_palette(
                 converted_color

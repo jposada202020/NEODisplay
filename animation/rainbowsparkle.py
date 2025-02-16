@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-`adafruit_led_animation.animation.rainbowsparkle`
+`animation.rainbowsparkle`
 ================================================================================
 
 Rainbow sparkle for CircuitPython helper library for LED animations.
