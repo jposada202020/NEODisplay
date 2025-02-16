@@ -155,7 +155,6 @@ class LEDSimulation:
         return len(self.leds_list)
 
     def __setitem__(self, index, color):
-
         if isinstance(color, int):
             self.palette[self._palette_counter] = color
             converted_color = color_to_tuple(color)
@@ -164,14 +163,35 @@ class LEDSimulation:
             self.leds_list[index].b = converted_color[2]
             self.leds_list[index].led_circle.color_index = self._palette_counter
             self._palette_counter += 1
+        elif len(color) == 3:
+            converted_color = tuple_to_color(color)
+            if converted_color not in self.palette:
+                self.palette[self._palette_counter] = converted_color
+                self._palette_helper.append(converted_color)
+                color_position_in_palette = self._palette_counter
+                self._palette_counter += 1
+            else:
+                color_position_in_palette = self._palette_helper.index(
+                    converted_color
+                )
+
+            self.leds_list[index].r = color[0]
+            self.leds_list[index].g = color[1]
+            self.leds_list[index].b = color[2]
+            self.leds_list[index].led_circle.color_index = (
+                color_position_in_palette
+            )
         else:
+
             for index, element in enumerate(color):
+
                 if element == 0:
                     self.leds_list[index].r = 0
                     self.leds_list[index].g = 0
                     self.leds_list[index].b = 0
                     self.leds_list[index].led_circle.color_index = 0
                 else:
+
                     converted_color = tuple_to_color(element)
                     if converted_color not in self.palette:
                         self.palette[self._palette_counter] = converted_color
