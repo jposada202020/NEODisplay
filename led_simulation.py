@@ -39,6 +39,24 @@ def color_to_tuple(value: int):
     raise ValueError("Color must be a tuple or 24-bit integer value.")
 
 
+def tuple_to_color(rgb_tuple):
+    """Converts an RGB tuple to a 24-bit integer.
+
+    :param rgb_tuple: A tuple containing the RGB values.
+    :return: A 24-bit integer representing the color.
+    """
+    if not isinstance(rgb_tuple, tuple) or len(rgb_tuple) != 3:
+        raise ValueError("Input must be an RGB tuple with three elements.")
+
+    r, g, b = rgb_tuple
+    if not (0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255):
+        raise ValueError(
+            "Each element in the RGB tuple must be between 0 and 255."
+        )
+
+    return (r << 16) | (g << 8) | b
+
+
 class LED_Circle:
     def __init__(
         self,
@@ -84,10 +102,13 @@ class LEDSimulation:
         self.led_color = led_color
         self.leds_list = []
         self.group = displayio.Group()
-        self.palette = displayio.Palette(3)
+        self.palette = displayio.Palette(256)
+
         self.palette[0] = 0x000000
         self.palette[1] = led_color
-        self.palette[2] = 0x0000FF
+        self._palette_counter = 2
+        self._palette_helper = [0x000000, led_color]
+
         self._start = 10
 
         self._plotbitmap = displayio.Bitmap(display.width, display.height, 3)
@@ -132,3 +153,38 @@ class LEDSimulation:
 
     def __len__(self):
         return len(self.leds_list)
+
+    def __setitem__(self, index, color):
+
+        if isinstance(color, int):
+            self.palette[self._palette_counter] = color
+            converted_color = color_to_tuple(color)
+            self.leds_list[index].r = converted_color[0]
+            self.leds_list[index].g = converted_color[1]
+            self.leds_list[index].b = converted_color[2]
+            self.leds_list[index].led_circle.color_index = self._palette_counter
+            self._palette_counter += 1
+        else:
+            for index, element in enumerate(color):
+                if element == 0:
+                    self.leds_list[index].r = 0
+                    self.leds_list[index].g = 0
+                    self.leds_list[index].b = 0
+                    self.leds_list[index].led_circle.color_index = 0
+                else:
+                    converted_color = tuple_to_color(element)
+                    if converted_color not in self.palette:
+                        self.palette[self._palette_counter] = converted_color
+                        self._palette_helper.append(converted_color)
+                        color_position_in_palette = self._palette_counter
+                        self._palette_counter += 1
+                    else:
+                        color_position_in_palette = self._palette_helper.index(
+                            converted_color
+                        )
+                    self.leds_list[index].r = element[0]
+                    self.leds_list[index].g = element[1]
+                    self.leds_list[index].b = element[2]
+                    self.leds_list[index].led_circle.color_index = (
+                        color_position_in_palette
+                    )
